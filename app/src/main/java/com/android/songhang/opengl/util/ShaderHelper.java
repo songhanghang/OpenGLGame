@@ -90,7 +90,7 @@ public class ShaderHelper {
         glValidateProgram(programObjectId);
         final int[] validateStatus = new int[1];
         glGetProgramiv(programObjectId, GL_VALIDATE_STATUS, validateStatus, 0);
-        Log.v(TAG, TAG + "验证opengl程序的结果： \n" + validateStatus + "\nLOG: " + glGetProgramInfoLog(programObjectId));
+        Log.v(TAG, TAG + "验证opengl程序的结果： " + validateStatus[0]);
         return validateStatus[0] != 0;
     }
 
