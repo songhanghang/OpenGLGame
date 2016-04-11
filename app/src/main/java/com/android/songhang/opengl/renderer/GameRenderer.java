@@ -2,6 +2,7 @@ package com.android.songhang.opengl.renderer;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.support.annotation.NonNull;
 
 import com.android.songhang.opengl.R;
@@ -22,6 +23,8 @@ import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
+import static android.opengl.GLES20.glGetUniformLocation;
+import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
@@ -36,32 +39,35 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private static final int POSITION_COMPONENT_COUNT = 2; // 坐标方向数量
     private static final int COLOR_COMPONENT_COUNT = 3; // 颜色纬度数量
     private static final int BYTES_PER_FLOAT = 4; //每个浮点数占4个字节
-    private final FloatBuffer vertexData;
-    private Context context;
-    private int program;
+    private static final String U_MATRIX = "u_Matrix";
     private static final String A_COLOR = "a_Color";
     private static final String A_POSITION = "a_Position";
+    private final FloatBuffer vertexData;
+    private final float[] projectionMatrix = new float[16];//正交投影矩阵
+    private Context context;
+    private int program;
     private static final int STRIDE = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_PER_FLOAT;
     private int aColorLocation;
     private int aPositionLocation;
+    private int uMatrixLocation;
 
     public GameRenderer(@NonNull Context context) {
         this.context = context;
         //带有颜色信息的顶点数组
         float[] tableVerVerticesWithTriangles = {
                 //三角扇 x    y      R      G    B
-                   0f,    0f,   1f,   1f,   1f,
-                -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
-                 0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
-                 0.5f,  0.5f, 0.7f, 0.7f, 0.7f,
-                -0.5f,  0.5f, 0.7f, 0.7f, 0.7f,
-                -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+                0f, 0f, 1f, 1f, 1f,
+                -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
+                0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
+                0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
+                -0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
+                -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
                 // 中间线
-                -0.5f,    0f,   1f,   0f,   0f,
-                 0.5f,    0f,   1f,   0f,   0f,
+                -0.5f, 0f, 1f, 0f, 0f,
+                0.5f, 0f, 1f, 0f, 0f,
                 // 两点
-                 0f,  -0.25f,   0f,   0f,   1f,
-                 0f,   0.25f,   1f,   0f,   0f
+                0f, -0.4f, 0f, 0f, 1f,
+                0f, 0.4f, 1f, 0f, 0f
         };
         vertexData = ByteBuffer
                 .allocateDirect(tableVerVerticesWithTriangles.length * BYTES_PER_FLOAT) //申请内存大小 单位字节
@@ -83,6 +89,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
             glUseProgram(program);
             aColorLocation = glGetAttribLocation(program, A_COLOR);
             aPositionLocation = glGetAttribLocation(program, A_POSITION);
+            uMatrixLocation = glGetUniformLocation(program, U_MATRIX);
             //重置缓存区指针到开始位置
             vertexData.position(0);
             // ---- 坐标属性
@@ -101,6 +108,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         glViewport(0, 0, width, height);
+        final float aspectRatio = width > height ? (float) width / height : (float) height / width;
+        if (width > height) {
+            Matrix.orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
+        } else {
+            Matrix.orthoM(projectionMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f);
+        }
     }
 
     @Override
@@ -117,6 +130,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         //绘制两个点
         glDrawArrays(GL_POINTS, 8, 1);
         glDrawArrays(GL_POINTS, 9, 1);
+        //应用矩阵
+        glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0);
 
     }
 }
