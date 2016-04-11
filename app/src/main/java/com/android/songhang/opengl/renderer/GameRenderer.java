@@ -36,7 +36,7 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by songhang on 16/4/7.
  */
 public class GameRenderer implements GLSurfaceView.Renderer {
-    private static final int POSITION_COMPONENT_COUNT = 2; // 坐标方向数量
+    private static final int POSITION_COMPONENT_COUNT = 4; // X Y Z W (w分量)
     private static final int COLOR_COMPONENT_COUNT = 3; // 颜色纬度数量
     private static final int BYTES_PER_FLOAT = 4; //每个浮点数占4个字节
     private static final String U_MATRIX = "u_Matrix";
@@ -55,19 +55,20 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         this.context = context;
         //带有颜色信息的顶点数组
         float[] tableVerVerticesWithTriangles = {
-                //三角扇 x    y      R      G    B
-                0f, 0f, 1f, 1f, 1f,
-                -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
-                0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
-                0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
-                -0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
-                -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
+                //X    Y    W    Z          R    G    B
+                //三角扇
+                0f, 0f, 0f, 1.5f,           1f, 1f, 1f,
+                -0.5f, -0.8f, 0f, 1f,       0.7f, 0.7f, 0.7f,
+                0.5f, -0.8f, 0f, 1f,        0.7f, 0.7f, 0.7f,
+                0.5f, 0.8f, 0f, 2f,         0.7f, 0.7f, 0.7f,
+                -0.5f, 0.8f, 0f, 2f,        0.7f, 0.7f, 0.7f,
+                -0.5f, -0.8f, 0f, 1f,       0.7f, 0.7f, 0.7f,
                 // 中间线
-                -0.5f, 0f, 1f, 0f, 0f,
-                0.5f, 0f, 1f, 0f, 0f,
+                -0.5f, 0f, 0f, 1.5f,        1f, 0f, 0f,
+                0.5f, 0f, 0f, 1.5f,         1f, 0f, 0f,
                 // 两点
-                0f, -0.4f, 0f, 0f, 1f,
-                0f, 0.4f, 1f, 0f, 0f
+                0f, -0.4f, 0f, 1.25f,       0f, 0f, 1f,
+                0f, 0.4f, 0f, 1.75f,        1f, 0f, 0f
         };
         vertexData = ByteBuffer
                 .allocateDirect(tableVerVerticesWithTriangles.length * BYTES_PER_FLOAT) //申请内存大小 单位字节
