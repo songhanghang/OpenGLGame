@@ -111,6 +111,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         glViewport(0, 0, width, height);
         //透视矩阵
         Matrix.perspectiveM(projectionMatrix, 0,  45, (float) width / height, 1f, 10f);
+        //模型矩阵
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.translateM(modelMatrix, 0, 0f, 0f, -2.5f);
         Matrix.rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f);
