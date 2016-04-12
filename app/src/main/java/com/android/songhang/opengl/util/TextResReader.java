@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 
 /**
  * Created by songhang on 16/4/8.
+ * opengl代码文件读入
  */
 public class TextResReader {
     public static String readTextFileFromRes(Context context, int resId) {
