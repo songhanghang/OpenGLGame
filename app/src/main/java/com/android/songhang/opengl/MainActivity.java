@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.android.songhang.opengl.renderer.GameRenderer;
+import com.android.songhang.opengl.util.ObjectBuilder;
 
 public class MainActivity extends AppCompatActivity {
     private GLSurfaceView glSurfaceView;

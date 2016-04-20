@@ -11,19 +11,19 @@ import com.android.songhang.opengl.R;
  */
 public class ColorShaderProgram extends ShaderProgram{
     private final int uMatrixLocation;
-
+    private final int uColorLocation;
     private final int aPositionLocation;
-    private final int aColorLocation;
 
     public ColorShaderProgram(@NonNull Context context) {
         super(context, R.raw.smiple_vertex_shader, R.raw.smiple_fragment_shader);
         uMatrixLocation = glGetUniformLocation(program, U_MATRIX);
         aPositionLocation = glGetAttribLocation(program, A_POSITION);
-        aColorLocation =- glGetAttribLocation(program, A_COLOR);
+        uColorLocation = glGetUniformLocation(program, U_COLOR);
     }
 
-    public void setUniforms(float[] matrix) {
+    public void setUniforms(float[] matrix, float r, float g, float b) {
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0);
+        glUniform4f(uColorLocation, r, g, b, 1f);
     }
 
     public int getPositionLocation() {
@@ -31,6 +31,6 @@ public class ColorShaderProgram extends ShaderProgram{
     }
 
     public int getColorLocation(){
-        return aColorLocation;
+        return uColorLocation;
     }
 }

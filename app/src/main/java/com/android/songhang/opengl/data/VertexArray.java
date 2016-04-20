@@ -11,6 +11,7 @@ import static android.opengl.GLES20.*;
 
 /**
  * Created by songhang on 16/4/12.
+ * 关联顶点到opengl
  */
 public class VertexArray {
     private final FloatBuffer floatBuffer;

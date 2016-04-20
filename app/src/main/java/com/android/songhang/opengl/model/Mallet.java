@@ -1,8 +1,13 @@
 package com.android.songhang.opengl.model;
 
 import com.android.songhang.opengl.Constants;
+import com.android.songhang.opengl.data.Geometry;
 import com.android.songhang.opengl.data.VertexArray;
 import com.android.songhang.opengl.programs.ColorShaderProgram;
+import com.android.songhang.opengl.util.ObjectBuilder;
+
+import java.util.List;
+
 import static android.opengl.GLES20.*;
 
 /**
@@ -10,29 +15,26 @@ import static android.opengl.GLES20.*;
  * 木椎
  */
 public class Mallet {
-    private static final int POSITION_COMPONENT_COUNT = 2; // 坐标方向数量
-    private static final int COLOR_COMPONENT_COUNT = 3; // 颜色纬度数量
-    private static final int STRIDE = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * Constants.BYTES_PER_FLOAT;
-    private static final float[] VERTEX_DATA = {
-          // X     Y       R     G     B
-            0f,  -0.4f,    0f,   0f,  1f,
-            0f,   0.4f,    1f,   0f,  0f
-    };
+    private static final int POSITION_COMPONENT_COUNT = 3; // 坐标方向数量
+    public final float raduis, height;
     private final VertexArray vertexArray;
+    private final List<ObjectBuilder.DrawCommand> drawList;
 
-    public Mallet() {
-        vertexArray = new VertexArray(VERTEX_DATA);
+    public Mallet(float raduis, float height, int numPointsAroundPuck) {
+        ObjectBuilder.GenerateData generateData = ObjectBuilder.createMallet(new Geometry.Point(0f,0f,0f), raduis, height, numPointsAroundPuck);
+        this.raduis = raduis;
+        this.height = height;
+        vertexArray = new VertexArray(generateData.vertexData);
+        drawList = generateData.drawList;
     }
 
     public void bindData(ColorShaderProgram colorShaderProgram) {
-        //顶点
-        vertexArray.setVertexAttribPointer(0, colorShaderProgram.getPositionLocation(), POSITION_COMPONENT_COUNT, STRIDE);
-        //颜色
-        vertexArray.setVertexAttribPointer(POSITION_COMPONENT_COUNT, colorShaderProgram.getColorLocation(), COLOR_COMPONENT_COUNT, STRIDE);
+        vertexArray.setVertexAttribPointer(0, colorShaderProgram.getPositionLocation(), POSITION_COMPONENT_COUNT, 0);
     }
 
     public void draw() {
-        //画点
-        glDrawArrays(GL_POINTS, 0, 2);
+        for (ObjectBuilder.DrawCommand drawCommand : drawList) {
+            drawCommand.draw();
+        }
     }
 }
